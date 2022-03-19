@@ -67,7 +67,3 @@ class WalletListener:
         # TODO: Call static transaction completed
         print(transaction)
         print("Transaction " + transaction['hash'] + " is is complete.")
-
-
-wallet_listener = WalletListener('0x4d999E20B733f8245c908425CD1b0295C8fFB212')
-wallet_listener.run()

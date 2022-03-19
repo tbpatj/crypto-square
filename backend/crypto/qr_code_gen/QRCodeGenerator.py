@@ -27,7 +27,3 @@ class QRCodeGenerator:
         else:
             raise Exception(r)
 
-
-gen = QRCodeGenerator()
-with open('test_qr.png', 'wb') as f:
-    f.write(gen.gen_qr_code('ethereum', '0x4d999E20B733f8245c908425CD1b0295C8fFB212', 0.09000000, 1234567))
