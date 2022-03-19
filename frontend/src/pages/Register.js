@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import useRegister from "../hooks/RegisterHook";
 
 export default function Register() {
@@ -6,7 +7,12 @@ export default function Register() {
     useRegister();
   return (
     <div>
-      <h1>Register</h1>
+      <Link to="/">
+        <p>back</p>
+      </Link>
+      <div className="center-column">
+        <h1 className="">Registration</h1>
+      </div>
       <form>
         <div className="center-column">
           <div className="left">
