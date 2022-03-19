@@ -49,10 +49,12 @@ export default function useRegister() {
         stripe_id: stripe,
       };
       console.log("Registering user");
-      axios.post("http://localhost:8000/register/", body).then((res) => {
+      axios.post("http://192.168.1.18:8000/register/", body).then((res) => {
         if (res.data.status === "success") {
-          console.log("setting user ID");
+          console.log("setting user ID " + res.data.user_id);
           localStorage.setItem("user_id", res.data.user_id);
+          console.log("setting merchant ID " + res.data.merchant_id);
+          localStorage.setItem("merchant_id", res.data.merchant_id);
           navigate("../", { replace: true });
         } else {
           console.log("no success message recieved");
@@ -64,7 +66,7 @@ export default function useRegister() {
         password: password,
       };
       console.log("Logging in User");
-      axios.post("http://localhost:8000/login/", body).then((res) => {
+      axios.post("192.168.1.18:8000/login/", body).then((res) => {
         console.log(res);
         if (res.data.status === "success") {
           console.log("user_id stored");

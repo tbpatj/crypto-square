@@ -11,7 +11,7 @@ function NavBar() {
   useEffect(() => {
     let user_id = localStorage.getItem("user_id");
     if (user_id === null) {
-      console.log("set user ID");
+      console.log("set user ID" + user_id);
       setUserID(user_id);
     }
     setUserID(user_id);
