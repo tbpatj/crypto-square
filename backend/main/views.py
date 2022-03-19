@@ -107,7 +107,9 @@ def check_qr_status(request):
         #return Response("")
         gen = QRCodeGenerator()
         uid = str(random.randint(1000000, 9999999))
-        r = gen.gen_qr_code('ethereum', '0x4d999E20B733f8245c908425CD1b0295C8fFB212', 0.00001, int(uid))
+        amount = transaction.order_amount_fiat / 30000
+        print(amount)
+        r = gen.gen_qr_code('ethereum', '0x4d999E20B733f8245c908425CD1b0295C8fFB212', amount, int(uid))
         # return render()
         # return FileResponse(r, content_type='image/png')
         print(uid)
