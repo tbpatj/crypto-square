@@ -23,7 +23,7 @@ class QRCodeGenerator:
         print(self.params)
         r = requests.get(self.BASE_URL, self.params)
         if r.status_code == 200:
+            print(r.content)
             return r.content
         else:
             raise Exception(r)
-
