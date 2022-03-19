@@ -50,19 +50,17 @@ class WalletListener:
                 if transaction['hash'] in self.pending_transactions and transaction['txreceipt_status'] == '1':
                     self.all_transactions.append(transaction['hash'])
                     self.pending_transactions.remove(transaction['hash'])
-                    self.transaction_completed(transaction['hash'])
+                    self.transaction_completed(transaction)
                 elif transaction['hash'] not in self.pending_transactions:
                     self.pending_transactions.append(transaction['hash'])
-                    self.transaction_pending(transaction['hash'])
+                    self.transaction_pending(transaction)
                 else:
                     print("Transaction pending.")
 
-    def transaction_pending(self, transaction_hash):
+    def transaction_pending(self, transaction):
         # TODO: Call static transaction pending
-        self.pending_transactions.append(transaction_hash)
-        print("Transaction " + transaction_hash + " is pending.")
+        print("Transaction " + transaction['hash'] + " is pending.")
 
-    def transaction_completed(self, transaction_hash):
+    def transaction_completed(self, transaction):
         # TODO: Call static transaction completed
-        self.pending_transactions.remove(transaction_hash)
-        print("Transaction " + str(transaction_hash) + " is is complete.")
+        print("Transaction " + transaction['hash'] + " is is complete.")
