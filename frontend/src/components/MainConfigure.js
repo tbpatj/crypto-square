@@ -8,11 +8,12 @@ import Test from "../pages/Test";
 function NavBar() {
   return (
     <nav className="float-right">
-      {window.location.pathname !== "/login" && (
-        <Link to="/login">
-          <button className="btn btn-secondary">Log In</button>
-        </Link>
-      )}
+      {window.location.pathname !== "/login" ||
+        (window.location.pathname !== "/QR" && (
+          <Link to="/login">
+            <button className="btn btn-secondary">Log In</button>
+          </Link>
+        ))}
     </nav>
   );
 }
