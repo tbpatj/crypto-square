@@ -50,7 +50,8 @@ def exists_username(request):
 def register(request):
     data = request.data
     body = {"username":data['username'], "email":data['email'],"first_name":data['first_name'], "last_name":data['last_name']}
-    if(type(data["stripe_id"]) == 'int'):
+    if(type(data["stripe_id"]) == 'int' or data["stripe_id"].isdigit()):
+        data["stripe_id"] = int(data["stripe_id"])
         user = User.objects.create_user(body)
         auth.login(request, user)
         merchant = Merchant(user_id=user.id,stripe_id=data['stripe_id'])
@@ -65,11 +66,13 @@ def register(request):
 #Login Function
 @api_view(['POST'])
 def login(request):
+    
     user = auth.authenticate(username=request.data['email'], password=request.data['password'])
     if(user is not None):
         print(auth.login(request, user))
         return Response({"user_id": user.id,"status":"success"})
     else:
+        print("not a valid user or password")
         return Response("Invalid username or password.", status=status.HTTP_403_FORBIDDEN)
 
 #Logout Function
