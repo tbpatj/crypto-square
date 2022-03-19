@@ -30,6 +30,7 @@ export default function Login() {
               <span>password</span>
               <input
                 placeholder="password"
+                type="password"
                 value={password}
                 onChange={(e) => updateInput(e, "password")}
               ></input>

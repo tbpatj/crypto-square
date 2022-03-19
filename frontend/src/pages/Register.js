@@ -32,6 +32,7 @@ export default function Register() {
               <input
                 placeholder="password"
                 value={password}
+                type="password"
                 onChange={(e) => updateInput(e, "password")}
               ></input>
             </label>
@@ -57,6 +58,7 @@ export default function Register() {
             <label>
               <span>plaid</span>
               <input
+                type="number"
                 placeholder="stripe ID"
                 value={stripe}
                 onChange={(e) => updateInput(e, "stripe")}

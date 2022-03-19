@@ -14,7 +14,7 @@ export default function Homepage() {
       <div className="jumbotron text-center">
         <h1>Welcome to Crypto Square</h1>
 
-        {userID !== null ? (
+        {userID === null ? (
           <div>
             <p>Click to join now</p>
             <Link to={"/register"}>

@@ -22,5 +22,6 @@ urlpatterns = [
     path('register/', views.register),
     path('logout/', views.logout),
     path('login/', views.login),
-    path('test/', views.test)
+    path('test/', views.test),
+    path('api/qr', views.check_qr_status)
 ]

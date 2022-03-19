@@ -1,4 +1,5 @@
 import requests
+import os
 
 
 class QRCodeGenerator:
@@ -23,7 +24,8 @@ class QRCodeGenerator:
         print(self.params)
         r = requests.get(self.BASE_URL, self.params)
         if r.status_code == 200:
-            return r.content
+            with open("static/QR.png", "wb") as f:
+                f.write(r.content)
         else:
             raise Exception(r)
 
