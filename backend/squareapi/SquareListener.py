@@ -1,7 +1,9 @@
 import time
 import threading
 from square.client import Client
-from squareapi import get_open_orders_at_location
+from squareapi.squareapi import get_open_orders_at_location
+import main.views;
+from main.models import Merchant
 
 # config
 SQUARE_API_POLL_TIME_SEC = 1
@@ -30,10 +32,13 @@ list_of_merchants = [
     }
 ]
 
-ids_of_known_open_orders = []
+ids_of_known_open_orders = [ 'inv:0-ChDg2xbRaNgYaamJ-qRRjxbPEKwL', 'inv:0-ChDct2EiE1urmfhs4wxMRsZVEKwL', 'inv:0-ChB6vY8MCUT89cEopp2YtZxaEKwL', 'inv:0-ChAJk5Sep86-05Ev7618ZUPmEKwL','inv:0-ChD19iDJa_9sRrahQpzL-QtfEKwL', 'inv:0-ChBLmkw1KXm6LpfFtA6iNjCIEKwL', 'inv:0-ChDWgs0njhFm8hzO22-v7r6PEKwL']
 
 class SquareListener():
     def __init__(self):
+        #self.init_list_of_merchants()
+        #self.get_init_transactions()
+        #time.sleep(1)
         self.listener_thread = threading.Thread(target=self.listener_main)
         self.listener_thread.start()
         print('square api listener created.')
@@ -55,7 +60,9 @@ class SquareListener():
                             location_id = order['location_id']
                             merchant_id = merchant['merchant_id']
                             print('invoice amt: $%d, id: %s, created: %s, location id: %s, merchant id: %s' % (order_amt / 100, invoice_id, created_date, location_id, merchant_id))
+                            
                             # call view object so they can link this stuff up and make a transaction
+                            main.views.new_order(invoice_id=invoice_id, order_amount_fiat=order_amt, sq_merchant_id=merchant_id)
 
                             # append to fake db
                             ids_of_known_open_orders.append(order['id'])
@@ -63,6 +70,21 @@ class SquareListener():
                             #found existing order
                             pass
             time.sleep(SQUARE_API_POLL_TIME_SEC)
+    
+    def init_list_of_merchants(self):
+        for merchant in Merchant.objects.all():
+            ids_of_known_open_orders.append(merchant.sq_merchant_id)
 
-square_listener = SquareListener()
-time.sleep(100)
+    def get_init_transactions(self):
+        # for all merchants, check for recent invoices to CryptoSquare
+        for merchant in list_of_merchants:
+            for location in merchant['locations']:
+                open_orders = get_open_orders_at_location(location)
+                for order in open_orders:
+                    #is already logged?
+                    if order['id'] not in ids_of_known_open_orders:
+                        print('past order <%s> found!');
+                        ids_of_known_open_orders.append(order['id'])
+                    else:
+                        #found existing order
+                        pass

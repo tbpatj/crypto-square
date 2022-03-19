@@ -14,6 +14,8 @@ class WalletListener:
         self.pending_transactions = []
         self.listener_active = False
 
+        # old api key: ZI345ST1IVEWCH5HUE95IAFKQMH24XXGFM
+        print(self.address)
         self.params = {
             "module": "account",
             "action": "txlist",
@@ -23,10 +25,10 @@ class WalletListener:
             "offset": 10,
             "page": 1,
             "sort": "desc",
-            "apikey": "ZI345ST1IVEWCH5HUE95IAFKQMH24XXGFM"
+            "apikey": "juab3erfgxhgnpji3tdjaqdzpve5b8axmd"
         }
         # TODO: Switch to prod
-        self.BASE_URL = "https://api-rinkeby.etherscan.io/api"
+        self.BASE_URL = "https://api.etherscan.io/api"
 
     def run(self):
         print("Start thread.")
@@ -39,6 +41,7 @@ class WalletListener:
 
         # Set current transactions
         r = requests.get(self.BASE_URL, params=self.params, headers={"User-Agent": ""})
+        print(r.content)
         self.all_transactions = [t['hash'] for t in json.loads(r.content)['result']]
         # 100000 per day -> 1.69 calls per second
         # or 5 calls per second

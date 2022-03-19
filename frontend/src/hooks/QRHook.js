@@ -11,7 +11,7 @@ export default function useQR() {
     console.log("checking server");
     axios
       .get(
-        `http://192.168.1.18:8000/api/qr?merchant_id=${localStorage.getItem(
+        `http://127.0.0.1:8000/api/qr?merchant_id=${localStorage.getItem(
           "merchant_id"
         )}&qr_recieved=${localStorage.getItem("qr_recieved")}`
       )
@@ -27,7 +27,7 @@ export default function useQR() {
           clearInterval(intervalTimer);
         } else if (res.data.state) {
           setStatus(2);
-          if (res.data.state === "Transaction complete") {
+          if (res.data.state === "Transaction complete.") {
             setStatus(3);
           }
         } else {

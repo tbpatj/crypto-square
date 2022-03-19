@@ -4,6 +4,7 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from crypto.qr_code_gen.QRCodeGenerator import QRCodeGenerator
 from crypto.wallet_listener.WalletListener import WalletListener
+from squareapi.SquareListener import SquareListener
 
 from rest_framework import status
 from django.http import HttpResponse, FileResponse
@@ -17,11 +18,16 @@ from rest_framework.response import Response
 import base64
 import json
 import os
+import random
 
+print(os.getcwd())
 listener = WalletListener('0x4d999E20B733f8245c908425CD1b0295C8fFB212')
 task = listener.run()
+new_square_transaction_listener = SquareListener()
 
 def new_order(invoice_id, order_amount_fiat, sq_merchant_id):
+    print('looking for %s' % sq_merchant_id)
+    print([m.sq_merchant_id for m in list(Merchant.objects.all())])
     txn = Transaction.objects.create(
         owner=Merchant.objects.get(sq_merchant_id=sq_merchant_id),
         state="Just opened.",
@@ -46,18 +52,20 @@ def exists_username(request):
 def register(request):
     data = request.data
     body = {"username":data['username'], "email":data['email'],"first_name":data['first_name'], "last_name":data['last_name']}
-    if(type(data["stripe_id"]) == 'int' or data["stripe_id"].isdigit()):
-        data["stripe_id"] = int(data["stripe_id"])
-        user = User.objects.create_user(body)
-        auth.login(request, user)
-        merchant = Merchant(user_id=user.id,stripe_id=data['stripe_id'])
-        merchant.save()
-        print("Create transaction.")
-        print(merchant.merchant_id)
-        test = Transaction.objects.create(owner=merchant, state='Just oppened.', invoice_id='1234')
-        return Response({"user_id":user.id,"merchant_id":merchant.merchant_id,"status":"success"})
-    else:
-        return Response("Oof bad request, you didn't send in a stripe_id that is of a number", status=status.HTTP_403_FORBIDDEN)
+    #if(type(data["stripe_id"]) == 'int' or data["stripe_id"].isdigit()):
+    #data["sq_merchant_id"] = data["stripe_id"] #yeah, i know
+    #data["stripe_id"] = 0
+    user = User.objects.create_user(body)
+    auth.login(request, user)
+    print(data)
+    merchant = Merchant(user_id=user.id,stripe_id=0,sq_merchant_id=data['stripe_id'])
+    merchant.save()
+    print("Create transaction.")
+    print(merchant.merchant_id)
+    #test = Transaction.objects.create(owner=merchant, state='Just oppened.', invoice_id='1234')
+    return Response({"user_id":user.id,"merchant_id":merchant.merchant_id,"status":"success"})
+    #else:
+        #return Response("Oof bad request, you didn't send in a stripe_id that is of a number", status=status.HTTP_403_FORBIDDEN)
     #Create a merchant linked model
     
     
@@ -87,16 +95,18 @@ def check_qr_status(request):
     print(request.GET.get('merchant_id', ''))
     merchant = Merchant.objects.get(merchant_id=request.GET.get('merchant_id', ''))
     transactions = Transaction.objects.filter(owner=merchant)
+    if not transactions:
+        return Response({'message': 'No active transaction.'})
     print(transactions.first().state)
     qr_recieved = request.GET.get('qr_recieved', False)
     print(qr_recieved)
     transaction = transactions.first()
-    if transaction.state == 'Just oppened.' and qr_recieved=='false':
+    if transaction.state == 'Just opened.' and qr_recieved=='false':
         print('QR Response.')
         # if we know we need to send back a QR code
         #return Response("")
         gen = QRCodeGenerator()
-        uid = '1234567'
+        uid = str(random.randint(1000000, 9999999))
         r = gen.gen_qr_code('ethereum', '0x4d999E20B733f8245c908425CD1b0295C8fFB212', 0.00001, int(uid))
         # return render()
         # return FileResponse(r, content_type='image/png')
@@ -106,7 +116,7 @@ def check_qr_status(request):
         transaction.crypto_uid = uid
         transaction.save()
         print(transaction.crypto_uid)
-        with open('backend/static/QR.png', 'rb') as imageFile:
+        with open('static/QR.png', 'rb') as imageFile:
             data = base64.b64encode(imageFile.read()).decode()
             response = json.dumps([{'image': data}])
             return HttpResponse(response, content_type = 'text/json')

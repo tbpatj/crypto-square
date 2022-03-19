@@ -9,7 +9,6 @@ SQUARE_APP_ID = 'sandbox-sq0idb-kxIfsS4_R9UYfFIwVznQIg'
 SQUARE_ACCESS_TOKEN = 'EAAAEGdGIcJvY4YLQB2oqK_1btrzqq4Y8am-050ljSr-a7vhx77sGRzQLKaaIijD'
 CRYPTOSQUARE_CUSTOMER_ID = 'H2K6GCD9CN6DZ04NZM063G0S40'
 
-
 client = Client(
     square_version='2022-03-16',
     access_token=SQUARE_ACCESS_TOKEN,

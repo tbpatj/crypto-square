@@ -54,12 +54,11 @@ export default function Register() {
                 onChange={(e) => updateInput(e, "lastname")}
               ></input>
             </label>
-            {/* plaid input field */}
+            {/* Square input field */}
             <label>
-              <span>plaid</span>
+              <span>square merchant id</span>
               <input
-                type="number"
-                placeholder="stripe ID"
+                placeholder="merchant id"
                 value={stripe}
                 onChange={(e) => updateInput(e, "stripe")}
               ></input>
