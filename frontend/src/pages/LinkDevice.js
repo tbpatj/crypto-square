@@ -7,6 +7,7 @@ function isNumeric(val) {
 export default function LinkDevicePage() {
   const [digit, setDigit] = useState("");
 
+  //just check if it is a 4 digit code
   function updateDigit(e) {
     if (e.target.value === "") {
       setDigit(e.target.value);
