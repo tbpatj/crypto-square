@@ -4,10 +4,29 @@ from django.contrib.auth.models import User
 
 from rest_framework import status
 from django.http import HttpResponse
-from .models import Merchant
+from .models import Merchant, Transaction
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
+# Static functions
+def pending_transaction(transaction):
+    print("Pending")
+
+def completed_transaction(transaction):
+    print("Completed")
+
+def failed_transaction(transaction):
+    print("Failed")
+
+def new_order(invoice_id, order_amount_fiat, sq_merchant_id):
+    txn = Transaction.objects.create(
+        owner=Merchant.objects.get(sq_merchant_id=sq_merchant_id),
+        state="Just opened.",
+        invoice_id=invoice_id,
+        order_amount_fiat=order_amount_fiat
+    )
+
 
 # Create your views here.
 def test(request):
@@ -47,3 +66,7 @@ def login(request):
 def logout(request):
     auth.logout(request)
     return Response("User is logged out.")
+
+#Functional endpoints
+
+#Frontend endpoints
