@@ -22,6 +22,7 @@ class WalletListener:
             "sort": "desc",
             "apikey": "ZI345ST1IVEWCH5HUE95IAFKQMH24XXGFM"
         }
+        # TODO: Switch to prod
         self.BASE_URL = "https://api-rinkeby.etherscan.io/api"
 
     def run(self):
@@ -59,8 +60,14 @@ class WalletListener:
 
     def transaction_pending(self, transaction):
         # TODO: Call static transaction pending
+        print(transaction)
         print("Transaction " + transaction['hash'] + " is pending.")
 
     def transaction_completed(self, transaction):
         # TODO: Call static transaction completed
+        print(transaction)
         print("Transaction " + transaction['hash'] + " is is complete.")
+
+
+wallet_listener = WalletListener('0x4d999E20B733f8245c908425CD1b0295C8fFB212')
+wallet_listener.run()
