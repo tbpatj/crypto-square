@@ -1,4 +1,5 @@
 import json
+import threading
 import time
 
 import requests
@@ -26,6 +27,12 @@ class WalletListener:
         self.BASE_URL = "https://api-rinkeby.etherscan.io/api"
 
     def run(self):
+        print("Start thread.")
+        x = threading.Thread(target=self.task)
+        x.start()
+        return x
+
+    def task(self):
         print("Run.")
         self.listener_active = True
 
