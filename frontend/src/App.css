@@ -18,6 +18,15 @@
   align-items: center;
   justify-content: center;
 }
+.left {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  justify-content: end;
+}
+.left > label > span {
+  padding: 5px;
+}
 
 .App-header {
   background-color: #282c34;

@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 from rest_framework import status
 from django.http import HttpResponse
+from .models import Merchant
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -22,12 +23,14 @@ def exists_username(request):
 #Register function
 @api_view(['POST'])
 def register(request):
-    user = User.objects.create_user(**request.data)
-    print(user.groups)
+    data = request.data
+    body = {"username":data['username'], "email":data['email'],"first_name":data['first_name'], "last_name":data['last_name']}
+    user = User.objects.create_user(body)
     auth.login(request, user)
-    merchant = Merchant()
-    print(user.id)
-    return Response(f"Successful Registration. {request.data['email']} logged in.")
+    #Create a merchant linked model
+    merchant = Merchant(user_id=user.id,stripe_id=data['stripe_id'])
+    merchant.save()
+    return Response({"user_id":user.id,"merchant_id":merchant.merchant_id,"status":"success"})
 
 #Login Function
 @api_view(['POST'])
@@ -35,7 +38,7 @@ def login(request):
     user = auth.authenticate(username=request.data['email'], password=request.data['password'])
     if(user is not None):
         print(auth.login(request, user))
-        return Response({"user_id": user.id})
+        return Response({"user_id": user.id,"status":"success"})
     else:
         return Response("Invalid username or password.", status=status.HTTP_403_FORBIDDEN)
 
