@@ -21,7 +21,7 @@ class Transaction(models.Model):
     order_amount_fiat = models.FloatField(null=True)
     crypto_amount_eth = models.FloatField(null=True)
     crypto_txn_hash = models.CharField(max_length=120,null=True)
-    crypto_uid = models.IntegerField(null=True)
+    crypto_uid = models.CharField(max_length=120,null=True)
     exchange_amount_fiat = models.FloatField(null=True)
     exchange_sale_id = models.CharField(max_length=120,null=True)
     plaid_access_token = models.CharField(max_length=120,null=True)

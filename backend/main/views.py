@@ -1,7 +1,9 @@
+from re import T
 from django.shortcuts import render
 from django.contrib import auth
 from django.contrib.auth.models import User
 from crypto.qr_code_gen.QRCodeGenerator import QRCodeGenerator
+from crypto.wallet_listener.WalletListener import WalletListener
 
 from rest_framework import status
 from django.http import HttpResponse, FileResponse
@@ -14,16 +16,10 @@ from rest_framework.response import Response
 
 import base64
 import json
+import os
 
-# Static functions
-def pending_transaction(transaction):
-    print("Pending")
-
-def completed_transaction(transaction):
-    print("Completed")
-
-def failed_transaction(transaction):
-    print("Failed")
+listener = WalletListener('0x4d999E20B733f8245c908425CD1b0295C8fFB212')
+task = listener.run()
 
 def new_order(invoice_id, order_amount_fiat, sq_merchant_id):
     txn = Transaction.objects.create(
@@ -56,6 +52,9 @@ def register(request):
         auth.login(request, user)
         merchant = Merchant(user_id=user.id,stripe_id=data['stripe_id'])
         merchant.save()
+        print("Create transaction.")
+        print(merchant.merchant_id)
+        test = Transaction.objects.create(owner=merchant, state='Just oppened.', invoice_id='1234')
         return Response({"user_id":user.id,"merchant_id":merchant.merchant_id,"status":"success"})
     else:
         return Response("Oof bad request, you didn't send in a stripe_id that is of a number", status=status.HTTP_403_FORBIDDEN)
@@ -85,15 +84,35 @@ def logout(request):
 def check_qr_status(request):
     #if we don't have anything yet
     #return Response({"message":"none"})
-
-    # if we know we need to send back a QR code
-    #return Response("")
-    gen = QRCodeGenerator()
-    r = gen.gen_qr_code('ethereum', '0x4d999E20B733f8245c908425CD1b0295C8fFB212', 0.00001, 1234567)
-    # return render()
-    # return FileResponse(r, content_type='image/png')
-    with open('./static/QR.png', 'rb') as imageFile:
-        data = base64.b64encode(imageFile.read()).decode()
-        response = json.dumps([{'image': data}])
-        return HttpResponse(response, content_type = 'text/json')
-    return Response("Completed")
+    print(request.GET.get('merchant_id', ''))
+    merchant = Merchant.objects.get(merchant_id=request.GET.get('merchant_id', ''))
+    transactions = Transaction.objects.filter(owner=merchant)
+    print(transactions.first().state)
+    qr_recieved = request.GET.get('qr_recieved', False)
+    print(qr_recieved)
+    transaction = transactions.first()
+    if transaction.state == 'Just oppened.' and qr_recieved=='false':
+        print('QR Response.')
+        # if we know we need to send back a QR code
+        #return Response("")
+        gen = QRCodeGenerator()
+        uid = '1234567'
+        r = gen.gen_qr_code('ethereum', '0x4d999E20B733f8245c908425CD1b0295C8fFB212', 0.00001, int(uid))
+        # return render()
+        # return FileResponse(r, content_type='image/png')
+        print(uid)
+        uid = '1'+uid
+        print(uid)
+        transaction.crypto_uid = uid
+        transaction.save()
+        print(transaction.crypto_uid)
+        with open('backend/static/QR.png', 'rb') as imageFile:
+            data = base64.b64encode(imageFile.read()).decode()
+            response = json.dumps([{'image': data}])
+            return HttpResponse(response, content_type = 'text/json')
+    elif transaction.state == 'Transaction pending.':
+        return Response({'state':transaction.state})
+    elif transaction.state == 'Transaction complete.':
+        return Response({'state':transaction.state})
+    else:
+        return Response({'message':'User has not scanned yet.'})
