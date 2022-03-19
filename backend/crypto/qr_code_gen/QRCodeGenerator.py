@@ -17,7 +17,7 @@ class QRCodeGenerator:
         self.params['chl'] = f'{coin_type}:{address}?amount={amount:10.10f}&message={message}'
         print(self.params)
         r = requests.get(self.BASE_URL, self.params)
-        if r.status_code is 200:
+        if r.status_code == 200:
             return r.content
         else:
             raise Exception(r)
