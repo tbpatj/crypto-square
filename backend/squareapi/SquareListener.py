@@ -47,8 +47,17 @@ class SquareListener():
                     for order in open_orders:
                         #is already logged?
                         if order['id'] not in ids_of_known_open_orders:
-                            print('new order <%s> found! would trigger new xaction!' % order['id'])
+                            print('new order <%s> found!');
                             # do something with the xaction data
+                            order_amt = order['payment_requests'][0]['computed_amount_money']['amount'] # TODO: check and make sure invoices arent just the first indice lol
+                            invoice_id = order['id']
+                            created_date = order['created_at']
+                            location_id = order['location_id']
+                            merchant_id = merchant['merchant_id']
+                            print('invoice amt: $%d, id: %s, created: %s, location id: %s, merchant id: %s' % (order_amt / 100, invoice_id, created_date, location_id, merchant_id))
+                            # call view object so they can link this stuff up and make a transaction
+
+                            # append to fake db
                             ids_of_known_open_orders.append(order['id'])
                         else:
                             #found existing order
@@ -56,4 +65,4 @@ class SquareListener():
             time.sleep(SQUARE_API_POLL_TIME_SEC)
 
 square_listener = SquareListener()
-time.sleep(10)
+time.sleep(100)
